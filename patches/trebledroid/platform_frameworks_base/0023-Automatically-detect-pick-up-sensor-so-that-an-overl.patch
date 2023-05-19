@@ -41,7 +41,7 @@ index 027d73fec07a..56f6b1989bf7 100644
 +                }
 +            }
 +        }
-+        return mContext.getResources().getBoolean(R.bool.config_dozePulsePickup) || found;
++        return mContext.getResources().getBoolean(R.bool.config_dozePulsePickup) || found;  }
  
      /** {@hide} */
      public boolean tiltGestureEnabled(int user) {
