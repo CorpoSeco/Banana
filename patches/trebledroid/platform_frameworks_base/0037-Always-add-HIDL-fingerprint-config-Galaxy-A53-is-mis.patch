@@ -10,7 +10,7 @@ Subject: [PATCH 37/39] Always add HIDL fingerprint config (Galaxy A53 is
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/services/core/java/com/android/server/biometrics/AuthService.java b/services/core/java/com/android/server/biometrics/AuthService.java
-index 748152aa7c97..b47b47c41f76 100644
+index e57cd10dab89..c9654576540a 100644
 --- a/services/core/java/com/android/server/biometrics/AuthService.java
 +++ b/services/core/java/com/android/server/biometrics/AuthService.java
 @@ -650,11 +650,11 @@ public class AuthService extends SystemService {
@@ -43,5 +43,5 @@ index 94b67cedf86c..9468f5f91c24 100644
                  final IBiometricService biometricService = IBiometricService.Stub.asInterface(
                          ServiceManager.getService(Context.BIOMETRIC_SERVICE));
 -- 
-2.25.1
+2.34.1
 

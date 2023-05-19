@@ -9,10 +9,10 @@ Subject: [PATCH 23/39] Automatically detect pick up sensor, so that an overlay
  1 file changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/core/java/android/hardware/display/AmbientDisplayConfiguration.java b/core/java/android/hardware/display/AmbientDisplayConfiguration.java
-index 47541ca16cda..28168b9208f5 100644
+index 027d73fec07a..56f6b1989bf7 100644
 --- a/core/java/android/hardware/display/AmbientDisplayConfiguration.java
 +++ b/core/java/android/hardware/display/AmbientDisplayConfiguration.java
-@@ -25,6 +25,9 @@ import android.text.TextUtils;
+@@ -28,6 +28,9 @@ import android.text.TextUtils;
  import android.util.ArrayMap;
  import android.util.SparseArray;
  
@@ -22,7 +22,7 @@ index 47541ca16cda..28168b9208f5 100644
  import com.android.internal.R;
  import com.android.internal.util.ArrayUtils;
  
-@@ -105,8 +108,20 @@ public class AmbientDisplayConfiguration {
+@@ -130,8 +133,20 @@ public class AmbientDisplayConfiguration {
  
      /** @hide */
      public boolean dozePickupSensorAvailable() {
@@ -41,10 +41,10 @@ index 47541ca16cda..28168b9208f5 100644
 +                }
 +            }
 +        }
-+        return mContext.getResources().getBoolean(R.bool.config_dozePulsePickup) || found;    }
++        return mContext.getResources().getBoolean(R.bool.config_dozePulsePickup) || found;
  
-     /** @hide */
-     public boolean tapGestureEnabled(int user) {
+     /** {@hide} */
+     public boolean tiltGestureEnabled(int user) {
 -- 
-2.25.1
+2.34.1
 
