@@ -12,8 +12,8 @@ to make this
  .../biometrics/UdfpsControllerOverlay.kt      |   3 +
  .../android/systemui/biometrics/UdfpsView.kt  | 138 ++++++++++
  services/core/Android.bp                      |   7 +-
- .../server/biometrics/AuthService.java        | 237 +++++++++++++++++-
- 6 files changed, 384 insertions(+), 4 deletions(-)
+ .../server/biometrics/AuthService.java        | 238 +++++++++++++++++-
+ 6 files changed, 385 insertions(+), 4 deletions(-)
 
 diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
 index 92a7d3078641..2badff922c4e 100644
@@ -466,6 +466,7 @@ index 6fbc3c66c1bc..e57cd10dab89 100644
                  com.android.internal.R.array.config_udfps_sensor_props);
  
 -        final boolean isUdfps = !ArrayUtils.isEmpty(udfpsProps);
++        boolean isUdfps = !ArrayUtils.isEmpty(udfpsProps);
 +        if(!isUdfps) udfpsProps = dynamicUdfpsProps();
 +        isUdfps = !ArrayUtils.isEmpty(udfpsProps);
 +
