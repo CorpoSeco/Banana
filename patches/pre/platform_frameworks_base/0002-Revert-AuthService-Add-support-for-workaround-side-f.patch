@@ -1,8 +1,8 @@
-From 8a93914967e2464fae2a750802477f5775fe7d0e Mon Sep 17 00:00:00 2001
+From 1a8b181bc321db3f9dcdadd3394b0607f389e653 Mon Sep 17 00:00:00 2001
 From: TheAtt1la <alittauwu@gmail.com>
-Date: Sun, 26 Feb 2023 04:01:43 +0100
-Subject: [PATCH 2/3] Revert AuthService: Add support for workaround side fps
- props
+Date: Fri, 19 May 2023 04:40:45 +0000
+Subject: [PATCH 2/2] Revert 'AuthService: Add support for workaround side fps
+ props'
 
 ---
  .../com/android/server/biometrics/AuthService.java   | 12 ------------
@@ -10,7 +10,7 @@ Subject: [PATCH 2/3] Revert AuthService: Add support for workaround side fps
  2 files changed, 4 insertions(+), 18 deletions(-)
 
 diff --git a/services/core/java/com/android/server/biometrics/AuthService.java b/services/core/java/com/android/server/biometrics/AuthService.java
-index fffb445895a5..bc550d311370 100644
+index 951cf5769b28..bc550d311370 100644
 --- a/services/core/java/com/android/server/biometrics/AuthService.java
 +++ b/services/core/java/com/android/server/biometrics/AuthService.java
 @@ -31,8 +31,6 @@ import static android.hardware.biometrics.BiometricAuthenticator.TYPE_NONE;
@@ -40,17 +40,17 @@ index fffb445895a5..bc550d311370 100644
 -        } else if (!workaroundLocations.isEmpty()) {
 -            return new FingerprintSensorPropertiesInternal(sensorId,
 -                    Utils.authenticatorStrengthToPropertyStrength(strength), maxEnrollmentsPerUser,
--                    componentInfo, sensorType, false /* halControlsIllumination */,
+-                    componentInfo, sensorType, true /* halControlsIllumination */,
 -                    resetLockoutRequiresHardwareAuthToken,
 -                    workaroundLocations);
          } else {
              return new FingerprintSensorPropertiesInternal(sensorId,
                      Utils.authenticatorStrengthToPropertyStrength(strength), maxEnrollmentsPerUser,
 diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
-index 77bacf2865b7..6f6c09b91a66 100644
+index c400d1f83c7e..dabb2cf5819a 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
-@@ -89,8 +89,6 @@ import java.util.stream.Collectors;
+@@ -90,8 +90,6 @@ import java.util.stream.Collectors;
  @SuppressWarnings("deprecation")
  public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvider {
  
@@ -59,7 +59,7 @@ index 77bacf2865b7..6f6c09b91a66 100644
      private boolean mTestHalEnabled;
  
      @NonNull private final Context mContext;
-@@ -193,7 +191,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+@@ -194,7 +192,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
      }
  
      private String getTag() {
@@ -68,7 +68,7 @@ index 77bacf2865b7..6f6c09b91a66 100644
      }
  
      boolean hasHalInstance() {
-@@ -723,7 +721,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+@@ -725,7 +723,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
      // TODO(b/174868353): workaround for gaps in HAL interface (remove and get directly from HAL)
      // reads values via an overlay instead of querying the HAL
      @NonNull
@@ -77,7 +77,7 @@ index 77bacf2865b7..6f6c09b91a66 100644
          final List<SensorLocationInternal> sensorLocations = new ArrayList<>();
  
          final TypedArray sfpsProps = context.getResources().obtainTypedArray(
-@@ -744,7 +742,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+@@ -746,7 +744,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
      }
  
      @Nullable
@@ -86,7 +86,7 @@ index 77bacf2865b7..6f6c09b91a66 100644
          if (array == null) {
              return null;
          }
-@@ -756,7 +754,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+@@ -758,7 +756,7 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
                      array.getInt(2, 0),
                      array.getInt(3, 0));
          } catch (Exception e) {
