@@ -1,4 +1,4 @@
-From c05651782358638ace34956b145d84a3e9bbce1c Mon Sep 17 00:00:00 2001
+From 7f21e62cb3bb55146f42ba7129f6a372ec9a2399 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 18 Dec 2022 18:20:40 -0500
 Subject: [PATCH 36/39] FOD support for Asus ZF8 and Samsung devices
@@ -12,26 +12,26 @@ to make this
  .../biometrics/UdfpsControllerOverlay.kt      |   3 +
  .../android/systemui/biometrics/UdfpsView.kt  | 138 ++++++++++
  services/core/Android.bp                      |   7 +-
- .../server/biometrics/AuthService.java        | 237 +++++++++++++++++-
- 6 files changed, 384 insertions(+), 4 deletions(-)
+ .../server/biometrics/AuthService.java        | 238 +++++++++++++++++-
+ 6 files changed, 385 insertions(+), 4 deletions(-)
 
 diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
-index 92a7d3078641..2badff922c4e 100644
+index 87f7deeea820..1205d2c04ebb 100644
 --- a/packages/SystemUI/Android.bp
 +++ b/packages/SystemUI/Android.bp
-@@ -180,6 +180,7 @@ android_library {
+@@ -179,6 +179,7 @@ android_library {
+         "LowLightDreamLib",
          "motion_tool_lib",
-         "vendor.lineage.powershare-V1.0-java",
          "faceunlock_framework",
 +        "vendor.goodix.hardware.biometrics.fingerprint-V2.1-java",
      ],
      manifest: "AndroidManifest.xml",
  
 diff --git a/packages/SystemUI/res/values/config.xml b/packages/SystemUI/res/values/config.xml
-index 8982bfb06b0e..a9932c31e4d2 100644
+index 1651ea260446..983c4d460af2 100644
 --- a/packages/SystemUI/res/values/config.xml
 +++ b/packages/SystemUI/res/values/config.xml
-@@ -584,7 +584,7 @@
+@@ -580,7 +580,7 @@
  
      <!-- The radius of the enrollment progress bar, in dp -->
      <integer name="config_udfpsEnrollProgressBar" translatable="false">
@@ -41,7 +41,7 @@ index 8982bfb06b0e..a9932c31e4d2 100644
  
      <!-- The time (in ms) needed to trigger the lock icon view's long-press affordance -->
 diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt
-index e7097a2b61cd..ee6d0da356f4 100644
+index ba145d2a0a12..596bf21032e0 100644
 --- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt
 +++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt
 @@ -195,6 +195,9 @@ class UdfpsControllerOverlay @JvmOverloads constructor(
@@ -55,7 +55,7 @@ index e7097a2b61cd..ee6d0da356f4 100644
                          if (accessibilityManager.isTouchExplorationEnabled) {
                              setOnHoverListener { v, event -> onTouch(v, event, true) }
 diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
-index 4a8877edfa53..53722c649fd1 100644
+index 4a8877edfa53..8278b2a2b16e 100644
 --- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
 +++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
 @@ -19,18 +19,27 @@ import android.content.Context
@@ -174,7 +174,7 @@ index 4a8877edfa53..53722c649fd1 100644
          animationViewController?.onDisplayConfiguring()
          mUdfpsDisplayMode?.enable(onDisplayConfigured)
 +
-+    mySurfaceView.setVisibility(VISIBLE)
++        mySurfaceView.setVisibility(VISIBLE)
 +        Log.d("PHH", "setting surface visible!")
 +
 +        val brightness = File("/sys/class/backlight/panel0-backlight/brightness").readText().toDouble()
@@ -246,15 +246,15 @@ index 4a8877edfa53..53722c649fd1 100644
      }
  }
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index 6a767275cb2c..0303b6a20f79 100644
+index 12fa5119daf1..bbe9e7832def 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -181,7 +181,12 @@ java_library_static {
-         "kotlin-stdlib",
-         "kotlinx_coroutines_android",
-         "kotlinx_coroutines",
+@@ -174,7 +174,12 @@ java_library_static {
+         "SurfaceFlingerProperties",
+         "com.android.sysprop.watchdog",
+         "faceunlock_framework",
 -        "vendor.samsung.hardware.sysinput-V1.2-java", // HIDL
-+         // HIDL
++        // HIDL
 +        "vendor.samsung.hardware.sysinput-V1.2-java",
 +        "vendor.goodix.hardware.biometrics.fingerprint-V2.1-java",
 +        "vendor.samsung.hardware.biometrics.fingerprint-V3.0-java",
@@ -264,7 +264,7 @@ index 6a767275cb2c..0303b6a20f79 100644
      javac_shard_size: 50,
  }
 diff --git a/services/core/java/com/android/server/biometrics/AuthService.java b/services/core/java/com/android/server/biometrics/AuthService.java
-index 6fbc3c66c1bc..e57cd10dab89 100644
+index 6fbc3c66c1bc..748152aa7c97 100644
 --- a/services/core/java/com/android/server/biometrics/AuthService.java
 +++ b/services/core/java/com/android/server/biometrics/AuthService.java
 @@ -75,6 +75,22 @@ import java.util.ArrayList;
@@ -373,7 +373,7 @@ index 6fbc3c66c1bc..e57cd10dab89 100644
      }
  
      /**
-@@ -773,14 +858,99 @@ public class AuthService extends SystemService {
+@@ -773,14 +858,100 @@ public class AuthService extends SystemService {
                  ? modality : (modality & ~BiometricAuthenticator.TYPE_CREDENTIAL);
      }
  
@@ -466,6 +466,7 @@ index 6fbc3c66c1bc..e57cd10dab89 100644
                  com.android.internal.R.array.config_udfps_sensor_props);
  
 -        final boolean isUdfps = !ArrayUtils.isEmpty(udfpsProps);
++        boolean isUdfps = !ArrayUtils.isEmpty(udfpsProps);
 +        if(!isUdfps) udfpsProps = dynamicUdfpsProps();
 +        isUdfps = !ArrayUtils.isEmpty(udfpsProps);
 +
@@ -475,7 +476,7 @@ index 6fbc3c66c1bc..e57cd10dab89 100644
  
          // config_is_powerbutton_fps indicates whether device has a power button fingerprint sensor.
          final boolean isPowerbuttonFps = getContext().getResources().getBoolean(
-@@ -842,4 +1012,67 @@ public class AuthService extends SystemService {
+@@ -842,4 +1013,67 @@ public class AuthService extends SystemService {
                  componentInfo, resetLockoutRequiresHardwareAuthToken,
                  resetLockoutRequiresChallenge);
      }
